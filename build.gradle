@@ -1,0 +1,73 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.1'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group = 'me.kamelajda'
+version = '1.0.0'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url = 'https://m2.dv8tion.net/releases' }
+    maven { url = 'https://plugins.gradle.org/m2/' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.22'
+    implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'joda-time:joda-time:2.12.0'
+
+    //noinspection GradlePackageUpdFate
+    implementation 'com.google.guava:guava:30.1-jre'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+build.dependsOn jar
+
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+shadowJar {
+    manifest {
+        attributes 'Implementation-Title': 'ValorantStats', 'Implementation-Version': '1.0.0'
+        attributes 'Main-Class': 'me.kamelajda.valorantstats.ValorantStatsApplication'
+    }
+
+    mergeServiceFiles()
+    mergeGroovyExtensionModules()
+
+    mergeServiceFiles()
+    append 'META-INF/spring.handlers'
+    append 'META-INF/spring.schemas'
+    append 'META-INF/spring.tooling'
+    append 'META-INF/spring.factories'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
